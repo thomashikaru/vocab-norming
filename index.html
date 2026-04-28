@@ -368,6 +368,8 @@
                 this.EXPERIMENT_ID = 306;
                 this.COMPLETION_CODE = "NORMING123";
                 this.EXPECTED_STIMULI_PER_PARTICIPANT = 32;
+                this.DEBUG_URL_PARAM = "debugSample";
+                this.DEBUG_SAMPLE_SIZE = 3;
 
                 this.stimuli = [];
                 this.selectedListId = null;
@@ -470,8 +472,11 @@
                     }
 
                     const params = new URLSearchParams(window.location.search);
+                    const debugMode = params.get(this.DEBUG_URL_PARAM) === "1";
                     const requestedListId = (params.get("list") || "").trim();
-                    const listId = requestedListId || availableListIds[0];
+                    const listId = debugMode
+                        ? this.pickRandomDebugListId(availableListIds)
+                        : (requestedListId || availableListIds[0]);
                     const selectedList = payload.lists[listId];
 
                     if (!Array.isArray(selectedList) || selectedList.length === 0) {
@@ -486,12 +491,33 @@
                     }
 
                     this.selectedListId = listId;
-                    this.stimuli = this.shuffleStimuli(selectedList);
+                    const shuffledList = this.shuffleStimuli(selectedList);
+                    this.stimuli = debugMode
+                        ? shuffledList.slice(0, this.DEBUG_SAMPLE_SIZE)
+                        : shuffledList;
                     this.updateStartState();
                 } catch (error) {
                     this.trialStatus.textContent = `Load error: ${error.message}`;
                     this.startBtn.disabled = true;
                 }
+            }
+
+            pickRandomDebugListId(availableListIds) {
+                const debugEligibleIds = availableListIds.filter((id) => {
+                    const match = /^L(\d+)$/.exec(id);
+                    if (!match) {
+                        return false;
+                    }
+                    const num = parseInt(match[1], 10);
+                    return num >= 1 && num <= 24;
+                });
+
+                if (debugEligibleIds.length === 0) {
+                    throw new Error("Debug mode could not find eligible lists L1-L24.");
+                }
+
+                const idx = Math.floor(Math.random() * debugEligibleIds.length);
+                return debugEligibleIds[idx];
             }
 
             shuffleStimuli(stimuli) {
