@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question-Answer Norming Study</title>
+    <style>
+        :root {
+            --bg: #f3f6fb;
+            --card: #ffffff;
+            --text: #182235;
+            --muted: #556278;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --border: #d8e1ef;
+            --success: #0f766e;
+            --danger: #b42318;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 760px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+            padding: 28px;
+        }
+
+        h1, h2 {
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+
+        p {
+            line-height: 1.5;
+            color: var(--muted);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .meta {
+            margin-bottom: 18px;
+            font-size: 14px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .stimulus-block {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 14px;
+            background: #fafcff;
+        }
+
+        .label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .text {
+            font-size: 18px;
+            line-height: 1.45;
+            color: var(--text);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 11px 12px;
+            font-size: 16px;
+        }
+
+        input[type="text"]:focus {
+            outline: 2px solid #bfdbfe;
+            border-color: var(--accent);
+        }
+
+        .consent-checkbox {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            margin-bottom: 18px;
+        }
+
+        .consent-checkbox label {
+            margin: 0;
+            font-weight: 500;
+            color: var(--muted);
+        }
+
+        .likert-wrap {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+
+        .likert-scale {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin: 10px 0 12px;
+        }
+
+        .likert-option {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            text-align: center;
+            padding: 8px 4px;
+            cursor: pointer;
+            user-select: none;
+            background: #fff;
+            transition: border-color 0.15s ease, background 0.15s ease;
+        }
+
+        .likert-option input {
+            margin-bottom: 6px;
+        }
+
+        .likert-option.selected {
+            border-color: var(--accent);
+            background: #eff6ff;
+        }
+
+        .likert-anchors {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--muted);
+            gap: 12px;
+        }
+
+        .button-row {
+            margin-top: 18px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        button {
+            border: none;
+            border-radius: 10px;
+            padding: 11px 20px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            background: var(--accent);
+            color: #fff;
+        }
+
+        button:hover:not(:disabled) {
+            background: var(--accent-hover);
+        }
+
+        button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--danger);
+            min-height: 20px;
+        }
+
+        .completion-box {
+            margin-top: 18px;
+            display: inline-block;
+            font-size: 30px;
+            letter-spacing: 2px;
+            font-weight: 800;
+            color: var(--success);
+            background: #ecfeff;
+            border: 1px solid #99f6e4;
+            border-radius: 10px;
+            padding: 12px 20px;
+        }
+
+        .instruction-body {
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        .instruction-body ul {
+            margin: 10px 0 14px 20px;
+        }
+
+        .instruction-body li {
+            margin-bottom: 8px;
+        }
+
+        .example-card {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #fafcff;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .example-card strong {
+            color: var(--text);
+        }
+
+        .mono-hint {
+            font-family: inherit;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            color: var(--muted);
+        }
+    </style>
+</head>
+<body>
+    <main class="card">
+        <section id="consentScreen">
+            <h1>Norming Study</h1>
+            <p>
+                You will rate how well each shown answer addresses its question, using a 1-7 scale.
+                Your responses are anonymous except for your Prolific ID and will be used for research.
+            </p>
+            <div class="form-group">
+                <label for="participantId">Prolific ID</label>
+                <input type="text" id="participantId" placeholder="Enter your Prolific ID" autocomplete="off">
+            </div>
+            <div class="consent-checkbox">
+                <input type="checkbox" id="consentCheckbox">
+                <label for="consentCheckbox">
+                    I am at least 18 years old, I understand this study, and I consent to participate.
+                </label>
+            </div>
+            <div class="button-row">
+                <button id="startBtn" disabled>Start Study</button>
+            </div>
+        </section>
+
+        <section id="instructionScreen" class="hidden">
+            <h2>Rating Instructions</h2>
+            <div class="instruction-body">
+                <p>
+                    Your task is to be a charitable evaluator and score how well a response answers a given question,
+                    considering that answers may be produced with vocabulary constraints.
+                    Do your best to infer the intended meaning even if wording is imperfect.
+                    Short or grammatically incorrect responses are not necessarily bad if the meaning is recoverable.
+                </p>
+                <p>Use this 7-point scale:</p>
+                <ul>
+                    <li><strong>1</strong> = Totally unhelpful, nonsensical, or completely unrelated to the question</li>
+                    <li><strong>4</strong> = Partially helpful but missing important information</li>
+                    <li><strong>7</strong> = Helpful, directly addresses the question, and shows reasoning and effort</li>
+                </ul>
+                <p>Examples:</p>
+
+                <div class="example-card">
+                    <strong>Question:</strong> What is the flu?<br>
+                    <strong>Response:</strong> The flu is a viral infection that can cause a range of symptoms, including fever, cough, sore throat, and body aches.<br>
+                    <strong>Score:</strong> 7
+                </div>
+                <div class="example-card">
+                    <strong>Question:</strong> What is the flu?<br>
+                    <strong>Response:</strong> Makes you sick, body feels bad, runny nose.<br>
+                    <strong>Score:</strong> 5
+                </div>
+                <div class="example-card">
+                    <strong>Question:</strong> What is the flu?<br>
+                    <strong>Response:</strong> You feel not good.<br>
+                    <strong>Score:</strong> 3
+                </div>
+                <div class="example-card">
+                    <strong>Question:</strong> What is the flu?<br>
+                    <strong>Response:</strong> I like pizza and pasta.<br>
+                    <strong>Score:</strong> 1
+                </div>
+                <div class="example-card">
+                    <strong>Question:</strong> What are the benefits of exercise?<br>
+                    <strong>Response:</strong> Exercise is good for your health and can help you stay fit.<br>
+                    <strong>Score:</strong> 6
+                </div>
+                <div class="example-card">
+                    <strong>Question:</strong> Why are basketball players so tall?<br>
+                    <strong>Response:</strong> The person is, um, well, very very big and very very, um, good at it.<br>
+                    <strong>Score:</strong> 3
+                </div>
+
+                <p class="mono-hint">Remember, the scores above are examples to help you calibrate your expectations, but you should use your own judgment when scoring items. If you find yourself giving all 1s or 7s, this might indicate that you are being too harsh or too lenient. When ready, continue to begin scoring items.</p>
+            </div>
+            <div class="button-row">
+                <button id="instructionContinueBtn">Continue to Ratings</button>
+            </div>
+        </section>
+
+        <section id="trialScreen" class="hidden">
+            <div class="meta" id="progressText">Item 1 of 1</div>
+
+            <div class="stimulus-block">
+                <div class="label">Question</div>
+                <div class="text" id="questionText"></div>
+            </div>
+
+            <div class="stimulus-block">
+                <div class="label">Answer</div>
+                <div class="text" id="answerText"></div>
+            </div>
+
+            <div class="likert-wrap">
+                <strong>How well does this answer address the question?</strong>
+                <div class="likert-scale" id="likertScale"></div>
+                <div class="likert-anchors">
+                    <span>1 = Very poor answer</span>
+                    <span>7 = Very good answer</span>
+                </div>
+            </div>
+
+            <div class="status" id="trialStatus"></div>
+
+            <div class="button-row">
+                <button id="nextBtn" disabled>Next</button>
+            </div>
+        </section>
+
+        <section id="completeScreen" class="hidden">
+            <h2>Thank you for participating!</h2>
+            <p>Your responses were submitted successfully. Please enter this completion code in Prolific:</p>
+            <div class="completion-box" id="completionCode"></div>
+            <p style="margin-top: 16px;">You may now close this window.</p>
+        </section>
+    </main>
+
+    <script>
+        class NormingStudyApp {
+            constructor() {
+                this.EXPERIMENT_ID = 306;
+                this.COMPLETION_CODE = "NORMING123";
+                this.EXPECTED_STIMULI_PER_PARTICIPANT = 32;
+
+                this.stimuli = [];
+                this.selectedListId = null;
+                this.responses = [];
+                this.currentIndex = 0;
+                this.selectedRating = null;
+                this.currentTrialStart = null;
+                this.participantId = null;
+
+                this.initializeElements();
+                this.initializeLikertScale();
+                this.setupEventListeners();
+                this.loadStimuli();
+            }
+
+            initializeElements() {
+                this.consentScreen = document.getElementById("consentScreen");
+                this.instructionScreen = document.getElementById("instructionScreen");
+                this.trialScreen = document.getElementById("trialScreen");
+                this.completeScreen = document.getElementById("completeScreen");
+
+                this.participantIdInput = document.getElementById("participantId");
+                this.consentCheckbox = document.getElementById("consentCheckbox");
+                this.startBtn = document.getElementById("startBtn");
+                this.instructionContinueBtn = document.getElementById("instructionContinueBtn");
+
+                this.progressText = document.getElementById("progressText");
+                this.questionText = document.getElementById("questionText");
+                this.answerText = document.getElementById("answerText");
+                this.likertScale = document.getElementById("likertScale");
+                this.nextBtn = document.getElementById("nextBtn");
+                this.trialStatus = document.getElementById("trialStatus");
+
+                this.completionCode = document.getElementById("completionCode");
+            }
+
+            initializeLikertScale() {
+                this.likertScale.innerHTML = "";
+                for (let rating = 1; rating <= 7; rating += 1) {
+                    const wrapper = document.createElement("label");
+                    wrapper.className = "likert-option";
+                    wrapper.dataset.rating = String(rating);
+
+                    const input = document.createElement("input");
+                    input.type = "radio";
+                    input.name = "likert";
+                    input.value = String(rating);
+
+                    const text = document.createElement("div");
+                    text.textContent = String(rating);
+
+                    wrapper.appendChild(input);
+                    wrapper.appendChild(text);
+                    this.likertScale.appendChild(wrapper);
+                }
+            }
+
+            setupEventListeners() {
+                this.participantIdInput.addEventListener("input", () => this.updateStartState());
+                this.consentCheckbox.addEventListener("change", () => this.updateStartState());
+                this.startBtn.addEventListener("click", () => this.startStudy());
+                this.instructionContinueBtn.addEventListener("click", () => this.startRatings());
+                this.nextBtn.addEventListener("click", () => this.submitCurrentTrial());
+
+                this.likertScale.addEventListener("change", (event) => {
+                    const target = event.target;
+                    if (!target || target.name !== "likert") {
+                        return;
+                    }
+                    this.selectedRating = parseInt(target.value, 10);
+                    this.updateLikertVisualState();
+                    this.trialStatus.textContent = "";
+                    this.nextBtn.disabled = false;
+                });
+            }
+
+            updateStartState() {
+                const hasId = this.participantIdInput.value.trim().length > 0;
+                const hasConsent = this.consentCheckbox.checked;
+                this.startBtn.disabled = !(hasId && hasConsent && this.stimuli.length > 0);
+            }
+
+            async loadStimuli() {
+                try {
+                    const response = await fetch("data/stimuli_lists.json");
+                    if (!response.ok) {
+                        throw new Error(`Could not load stimuli_lists.json (${response.status})`);
+                    }
+
+                    const payload = await response.json();
+                    if (!payload || typeof payload !== "object" || !payload.lists || typeof payload.lists !== "object") {
+                        throw new Error("Stimulus lists file is empty or invalid.");
+                    }
+
+                    const availableListIds = Object.keys(payload.lists).sort((a, b) =>
+                        a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" })
+                    );
+                    if (availableListIds.length === 0) {
+                        throw new Error("No stimulus lists were found.");
+                    }
+
+                    const params = new URLSearchParams(window.location.search);
+                    const requestedListId = (params.get("list") || "").trim();
+                    const listId = requestedListId || availableListIds[0];
+                    const selectedList = payload.lists[listId];
+
+                    if (!Array.isArray(selectedList) || selectedList.length === 0) {
+                        throw new Error(
+                            `Requested list "${listId}" not found. Valid lists: ${availableListIds.join(", ")}`
+                        );
+                    }
+                    if (selectedList.length !== this.EXPECTED_STIMULI_PER_PARTICIPANT) {
+                        throw new Error(
+                            `List "${listId}" has ${selectedList.length} items; expected ${this.EXPECTED_STIMULI_PER_PARTICIPANT}.`
+                        );
+                    }
+
+                    this.selectedListId = listId;
+                    this.stimuli = this.shuffleStimuli(selectedList);
+                    this.updateStartState();
+                } catch (error) {
+                    this.trialStatus.textContent = `Load error: ${error.message}`;
+                    this.startBtn.disabled = true;
+                }
+            }
+
+            shuffleStimuli(stimuli) {
+                const shuffled = [...stimuli];
+                for (let i = shuffled.length - 1; i > 0; i -= 1) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                return shuffled;
+            }
+
+            startStudy() {
+                this.participantId = this.participantIdInput.value.trim();
+                this.consentScreen.classList.add("hidden");
+                this.instructionScreen.classList.remove("hidden");
+            }
+
+            startRatings() {
+                this.instructionScreen.classList.add("hidden");
+                this.trialScreen.classList.remove("hidden");
+                this.currentIndex = 0;
+                this.responses = [];
+                this.renderTrial();
+            }
+
+            renderTrial() {
+                const stimulus = this.stimuli[this.currentIndex];
+                this.progressText.textContent = `Item ${this.currentIndex + 1} of ${this.stimuli.length}`;
+                this.questionText.textContent = stimulus.question;
+                this.answerText.textContent = stimulus.answer;
+
+                this.selectedRating = null;
+                this.nextBtn.disabled = true;
+                this.trialStatus.textContent = "";
+                this.clearLikertSelection();
+                this.currentTrialStart = Date.now();
+                this.nextBtn.textContent =
+                    this.currentIndex === this.stimuli.length - 1 ? "Submit Study" : "Next";
+            }
+
+            clearLikertSelection() {
+                const inputs = this.likertScale.querySelectorAll("input[name='likert']");
+                inputs.forEach((input) => {
+                    input.checked = false;
+                });
+                this.updateLikertVisualState();
+            }
+
+            updateLikertVisualState() {
+                const options = this.likertScale.querySelectorAll(".likert-option");
+                options.forEach((option) => {
+                    const rating = parseInt(option.dataset.rating, 10);
+                    option.classList.toggle("selected", rating === this.selectedRating);
+                });
+            }
+
+            submitCurrentTrial() {
+                if (this.selectedRating === null) {
+                    this.trialStatus.textContent = "Please select a rating from 1 to 7.";
+                    this.nextBtn.disabled = true;
+                    return;
+                }
+
+                const trialEnd = Date.now();
+                const stimulus = this.stimuli[this.currentIndex];
+                const trialResult = {
+                    participantId: this.participantId,
+                    Experiment: this.EXPERIMENT_ID,
+                    listId: this.selectedListId,
+                    promptIndex: this.currentIndex,
+                    itemId: stimulus.itemId,
+                    prompt: stimulus.question,
+                    answerText: stimulus.answer,
+                    response: this.selectedRating,
+                    startTime: new Date(this.currentTrialStart).toISOString(),
+                    endTime: new Date(trialEnd).toISOString(),
+                    timestamp: new Date().toISOString()
+                };
+
+                this.responses.push(trialResult);
+                this.currentIndex += 1;
+
+                if (this.currentIndex < this.stimuli.length) {
+                    this.renderTrial();
+                    return;
+                }
+
+                this.submitAllResults();
+            }
+
+            submitAllResults() {
+                this.nextBtn.disabled = true;
+                this.nextBtn.textContent = "Submitting...";
+                this.trialStatus.textContent = "";
+                this.sendDataToServer(this.responses);
+            }
+
+            sendDataToServer(jsonData) {
+                const xhr = new XMLHttpRequest();
+                const url = `https://noisy-comp-server-311aa565092d.herokuapp.com/api/submit_experiment/${String(this.EXPERIMENT_ID)}`;
+
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+
+                xhr.onload = () => {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        this.showCompletionScreen();
+                    } else {
+                        this.nextBtn.disabled = false;
+                        this.nextBtn.textContent = "Submit Study";
+                        this.trialStatus.textContent = "Submission failed. Please try again.";
+                    }
+                };
+
+                xhr.onerror = () => {
+                    this.nextBtn.disabled = false;
+                    this.nextBtn.textContent = "Submit Study";
+                    this.trialStatus.textContent = "Network error while submitting. Please try again.";
+                };
+
+                try {
+                    xhr.send(JSON.stringify(jsonData));
+                } catch (error) {
+                    this.nextBtn.disabled = false;
+                    this.nextBtn.textContent = "Submit Study";
+                    this.trialStatus.textContent = `Submission error: ${error.message}`;
+                }
+            }
+
+            showCompletionScreen() {
+                this.trialScreen.classList.add("hidden");
+                this.completeScreen.classList.remove("hidden");
+                this.completionCode.textContent = this.COMPLETION_CODE;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            new NormingStudyApp();
+        });
+    </script>
+</body>
+</html>
