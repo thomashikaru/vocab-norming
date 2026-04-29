@@ -31,6 +31,14 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        input,
+        textarea {
+            user-select: text;
+            -webkit-user-select: text;
         }
 
         .card {
@@ -256,6 +264,7 @@
                 Your responses are anonymous except for your Prolific ID.
                 The data collected in this study will be used for academic research and may be presented in academic publications and conferences or shared with other researchers.
                 You may leave the study at any time and for any reason.
+                Please do not use any AI tools, and please do not leave the study window or tab until you have submitted your responses.
             </p>
             <div class="form-group">
                 <label for="participantId">Prolific ID</label>
@@ -362,6 +371,17 @@
             <div class="completion-box" id="completionCode"></div>
             <p style="margin-top: 16px;">You may now close this window.</p>
         </section>
+
+        <section id="terminatedScreen" class="hidden">
+            <h2>Study Ended</h2>
+            <p>
+                This study has been ended because the browser tab or window lost focus.
+                Per study policy, participants must remain in this tab/window for the full task.
+            </p>
+            <p>
+                Please return the study on Prolific.
+            </p>
+        </section>
     </main>
 
     <script>
@@ -380,6 +400,9 @@
                 this.selectedRating = null;
                 this.currentTrialStart = null;
                 this.participantId = null;
+                this.studyStarted = false;
+                this.studyCompleted = false;
+                this.studyTerminated = false;
 
                 this.initializeElements();
                 this.initializeLikertScale();
@@ -392,6 +415,7 @@
                 this.instructionScreen = document.getElementById("instructionScreen");
                 this.trialScreen = document.getElementById("trialScreen");
                 this.completeScreen = document.getElementById("completeScreen");
+                this.terminatedScreen = document.getElementById("terminatedScreen");
 
                 this.participantIdInput = document.getElementById("participantId");
                 this.consentCheckbox = document.getElementById("consentCheckbox");
@@ -446,6 +470,27 @@
                     this.trialStatus.textContent = "";
                     this.nextBtn.disabled = false;
                 });
+
+                document.addEventListener("copy", (event) => event.preventDefault());
+                document.addEventListener("cut", (event) => event.preventDefault());
+                document.addEventListener("contextmenu", (event) => event.preventDefault());
+                document.addEventListener("selectstart", (event) => {
+                    const target = event.target;
+                    if (
+                        target instanceof HTMLInputElement ||
+                        target instanceof HTMLTextAreaElement
+                    ) {
+                        return;
+                    }
+                    event.preventDefault();
+                });
+
+                document.addEventListener("visibilitychange", () => {
+                    if (document.visibilityState === "hidden") {
+                        this.terminateForFocusLoss();
+                    }
+                });
+                window.addEventListener("blur", () => this.terminateForFocusLoss());
             }
 
             updateStartState() {
@@ -533,6 +578,7 @@
 
             startStudy() {
                 this.participantId = this.participantIdInput.value.trim();
+                this.studyStarted = true;
                 this.consentScreen.classList.add("hidden");
                 this.instructionScreen.classList.remove("hidden");
             }
@@ -650,9 +696,27 @@
             }
 
             showCompletionScreen() {
+                this.studyCompleted = true;
                 this.trialScreen.classList.add("hidden");
                 this.completeScreen.classList.remove("hidden");
                 this.completionCode.textContent = this.COMPLETION_CODE;
+            }
+
+            terminateForFocusLoss() {
+                if (!this.studyStarted || this.studyCompleted || this.studyTerminated) {
+                    return;
+                }
+                this.studyTerminated = true;
+
+                this.startBtn.disabled = true;
+                this.instructionContinueBtn.disabled = true;
+                this.nextBtn.disabled = true;
+
+                this.consentScreen.classList.add("hidden");
+                this.instructionScreen.classList.add("hidden");
+                this.trialScreen.classList.add("hidden");
+                this.completeScreen.classList.add("hidden");
+                this.terminatedScreen.classList.remove("hidden");
             }
         }
 
